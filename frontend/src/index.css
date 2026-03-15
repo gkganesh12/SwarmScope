@@ -869,3 +869,533 @@
   .hero-stats { width: 100%; }
   .hero-stat { padding: 0 12px; }
 }
+
+/* ═══════════════════════════════════════════════════════
+   SIMULATION PAGE
+   ═══════════════════════════════════════════════════════ */
+
+.sim-root {
+  min-height: 100vh;
+  background: #05070A;
+}
+
+.sim-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  gap: 20px;
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+.sim-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #10B981;
+  background: rgba(16,185,129,0.08);
+  border: 1px solid rgba(16,185,129,0.2);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sim-back-btn:hover {
+  background: rgba(16,185,129,0.15);
+  border-color: rgba(16,185,129,0.4);
+}
+
+.sim-nav-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sim-nav-back:hover {
+  color: #fff;
+  border-color: rgba(255,255,255,0.15);
+}
+
+.sim-status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  color: #6b7280;
+}
+
+.status-dot.error {
+  background: #EF4444;
+  box-shadow: 0 0 8px rgba(239,68,68,0.5);
+}
+
+.status-dot.complete {
+  background: #10B981;
+  animation: none;
+  box-shadow: 0 0 8px rgba(16,185,129,0.5);
+}
+
+/* ── Sim Layout ─────────────────────────────────────── */
+
+.sim-content {
+  display: flex;
+  gap: 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 48px 60px;
+  align-items: flex-start;
+}
+
+.sim-pipeline {
+  flex: 0.9;
+  position: sticky;
+  top: 100px;
+}
+
+.sim-right {
+  flex: 1.1;
+  min-height: 60vh;
+}
+
+.sim-panel-header {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ── Pipeline Steps ─────────────────────────────────── */
+
+.sim-steps {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 32px;
+}
+
+.sim-step {
+  display: flex;
+  gap: 16px;
+  padding: 0;
+}
+
+.sim-step-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+.sim-step-line {
+  width: 2px;
+  flex: 1;
+  min-height: 24px;
+  background: rgba(255,255,255,0.06);
+  margin: 6px 0;
+  transition: background 0.3s;
+}
+
+.sim-step-line.done {
+  background: rgba(16,185,129,0.3);
+}
+
+.sim-step-line.running {
+  background: linear-gradient(180deg, rgba(16,185,129,0.3) 0%, rgba(255,255,255,0.06) 100%);
+}
+
+.step-icon {
+  flex-shrink: 0;
+}
+
+.step-icon.done { color: #10B981; }
+.step-icon.running {
+  color: #10B981;
+  animation: spin 1s linear infinite;
+}
+.step-icon.error { color: #EF4444; }
+.step-icon.pending { color: #374151; }
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.sim-step-content {
+  padding-bottom: 24px;
+}
+
+.sim-step-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.sim-step-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #10B981;
+  opacity: 0.4;
+}
+
+.sim-step.running .sim-step-num,
+.sim-step.done .sim-step-num { opacity: 1; }
+
+.sim-step-title {
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: #6b7280;
+  transition: color 0.3s;
+}
+
+.sim-step.running .sim-step-title,
+.sim-step.done .sim-step-title { color: #d1d5db; }
+
+.sim-step-desc {
+  font-size: 0.78rem;
+  color: #4b5563;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.sim-step-msg {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: #6b7280;
+  margin-top: 6px;
+}
+
+/* Progress Bar */
+.sim-step-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.sim-progress-bar {
+  flex: 1;
+  height: 3px;
+  background: rgba(255,255,255,0.06);
+  overflow: hidden;
+}
+
+.sim-progress-fill {
+  height: 100%;
+  background: #10B981;
+  transition: width 0.4s ease;
+  box-shadow: 0 0 8px rgba(16,185,129,0.4);
+}
+
+.sim-progress-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  color: #10B981;
+  font-weight: 600;
+  min-width: 32px;
+  text-align: right;
+}
+
+/* ── Seed Info ──────────────────────────────────────── */
+
+.sim-seed-info {
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 20px;
+  background: rgba(255,255,255,0.01);
+}
+
+.sim-seed-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  color: #4b5563;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.sim-seed-files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.sim-seed-prompt {
+  font-size: 0.82rem;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.6;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── Console ────────────────────────────────────────── */
+
+.sim-console {
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.01);
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 160px);
+}
+
+.sim-console .sim-panel-header {
+  padding: 16px 20px;
+  margin-bottom: 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.sim-log-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  line-height: 1.8;
+}
+
+.sim-log-line {
+  color: #6b7280;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.sim-log-line.error {
+  color: #EF4444;
+}
+
+/* ── Results Tabs ───────────────────────────────────── */
+
+.sim-results {
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.01);
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 160px);
+}
+
+.sim-tabs {
+  display: flex;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.sim-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 24px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #4b5563;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sim-tab:hover { color: #9ca3af; }
+
+.sim-tab.active {
+  color: #10B981;
+  border-bottom-color: #10B981;
+}
+
+.sim-tab-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+/* Report */
+.sim-report-json {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: #9ca3af;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+}
+
+.sim-no-data {
+  color: #4b5563;
+  font-size: 0.85rem;
+  text-align: center;
+  margin-top: 60px;
+}
+
+/* Chat */
+.sim-chat {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.sim-chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 16px;
+}
+
+.sim-chat-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 100%;
+  color: #4b5563;
+  text-align: center;
+}
+
+.sim-chat-empty p { margin: 0; font-size: 0.85rem; }
+.sim-chat-hint { font-size: 0.75rem !important; color: #374151; }
+
+.sim-chat-msg {
+  display: flex;
+}
+
+.sim-chat-msg.user { justify-content: flex-end; }
+.sim-chat-msg.assistant { justify-content: flex-start; }
+
+.sim-chat-bubble {
+  max-width: 80%;
+  padding: 10px 16px;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sim-chat-msg.user .sim-chat-bubble {
+  background: rgba(16,185,129,0.1);
+  border: 1px solid rgba(16,185,129,0.2);
+  color: #d1d5db;
+}
+
+.sim-chat-msg.assistant .sim-chat-bubble {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: #9ca3af;
+}
+
+.sim-chat-input-row {
+  display: flex;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.sim-chat-input {
+  flex: 1;
+  padding: 12px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: #d1d5db;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.sim-chat-input:focus {
+  border-color: rgba(16,185,129,0.3);
+}
+
+.sim-chat-input::placeholder { color: #374151; }
+
+.sim-chat-send {
+  width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #10B981;
+  border: 1px solid #10B981;
+  color: #05070A;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sim-chat-send:hover { background: #34d399; }
+.sim-chat-send:disabled {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.08);
+  color: #374151;
+  cursor: not-allowed;
+}
+
+/* ── Error Banner ───────────────────────────────────── */
+
+.sim-error-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 20px;
+  margin-top: 16px;
+  background: rgba(239,68,68,0.08);
+  border: 1px solid rgba(239,68,68,0.2);
+  color: #EF4444;
+  font-size: 0.82rem;
+}
+
+.sim-retry-btn {
+  margin-left: auto;
+  padding: 6px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #EF4444;
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.3);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sim-retry-btn:hover {
+  background: rgba(239,68,68,0.2);
+}
+
+/* ── Sim Responsive ─────────────────────────────────── */
+
+@media (max-width: 1024px) {
+  .sim-content {
+    flex-direction: column;
+    padding: 24px 28px 40px;
+  }
+  .sim-pipeline {
+    position: static;
+  }
+  .sim-console, .sim-results {
+    height: 500px;
+  }
+}
+
+@media (max-width: 640px) {
+  .sim-content {
+    padding: 16px 16px 32px;
+  }
+}

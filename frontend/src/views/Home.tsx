@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import SwarmCanvas from '../components/SwarmCanvas';
 import { UploadCloud, Terminal, Play, ArrowDown, Zap, Shield, BarChart3, Users, Cpu, Globe } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -38,6 +39,7 @@ const FEATURES = [
 
 /* ── component ────────────────────────────────────────── */
 export default function Home() {
+  const navigate = useNavigate();
   const [prompt, setPrompt] = useState('');
   const [files, setFiles] = useState<File[]>([]);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -54,6 +56,11 @@ export default function Home() {
     if (e.target.files?.length) setFiles(prev => [...prev, ...Array.from(e.target.files as FileList)]);
   };
   const canSubmit = files.length > 0 && prompt.trim() !== '';
+
+  const handleStartSimulation = () => {
+    if (!canSubmit) return;
+    navigate('/simulation', { state: { files, prompt } });
+  };
 
   return (
     <div className="home-root">
@@ -302,6 +309,7 @@ export default function Home() {
               <button
                 className={`start-btn ${canSubmit ? 'active' : ''}`}
                 disabled={!canSubmit}
+                onClick={handleStartSimulation}
               >
                 <span>START SIMULATION</span>
                 <Play size={14} className="btn-play" />
