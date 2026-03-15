@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft, CheckCircle2, Circle, Loader2, XCircle,
-  MessageSquare, Send, ChevronDown, BarChart3, Users,
+  MessageSquare, Send, BarChart3, Users,
   Activity, FileText,
 } from 'lucide-react';
 import * as api from '../services/api';
@@ -65,8 +65,8 @@ export default function Simulation() {
   const [completed, setCompleted] = useState(false);
 
   // IDs accumulated during the pipeline
-  const [projectId, setProjectId] = useState<string | null>(null);
-  const [simulationId, setSimulationId] = useState<string | null>(null);
+  const [_projectId, setProjectId] = useState<string | null>(null);
+  const [_simulationId, setSimulationId] = useState<string | null>(null);
   const [reportId, setReportId] = useState<string | null>(null);
 
   // Post-sim tabs
