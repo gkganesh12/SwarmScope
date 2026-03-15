@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: swarmscope
+    runtime: docker
+    dockerfilePath: ./Dockerfile.render
+    plan: free
+    region: oregon
+    healthCheckPath: /health
+    envVars:
+      # Optional — users can provide their own keys via the BYO API UI
+      - key: LLM_API_KEY
+        sync: false
+      - key: LLM_BASE_URL
+        value: https://api.openai.com/v1
+      - key: LLM_MODEL_NAME
+        value: gpt-4o-mini
+      - key: ZEP_API_KEY
+        sync: false
+      - key: FLASK_DEBUG
+        value: "False"

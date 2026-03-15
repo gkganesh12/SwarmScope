@@ -24,14 +24,12 @@ from app.config import Config
 
 def main():
     """Main function"""
-    # Validate config
+    # Validate config (warnings only — users can provide keys via BYO API headers)
     errors = Config.validate()
     if errors:
-        print("Config error:")
+        print("Config warnings (BYO API mode — users can provide keys via the UI):")
         for err in errors:
             print(f"  - {err}")
-        print("\nPlease check the configuration in the .env file")
-        sys.exit(1)
     
     # Create application
     app = create_app()

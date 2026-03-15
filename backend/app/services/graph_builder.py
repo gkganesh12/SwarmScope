@@ -43,7 +43,8 @@ class GraphBuilderService:
     """
     
     def __init__(self, api_key: Optional[str] = None):
-        self.api_key = api_key or Config.ZEP_API_KEY
+        from ..utils.byo_keys import get_zep_api_key
+        self.api_key = get_zep_api_key(api_key)
         if not self.api_key:
             raise ValueError("ZEP_API_KEY not configured")
         

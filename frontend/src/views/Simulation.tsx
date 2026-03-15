@@ -7,6 +7,7 @@ import {
   Activity, FileText,
 } from 'lucide-react';
 import * as api from '../services/api';
+import ApiKeySettings from '../components/ApiKeySettings';
 
 /* ── Types ───────────────────────────────────────────── */
 
@@ -335,6 +336,7 @@ export default function Simulation() {
             <span className={`status-dot ${error ? 'error' : completed ? 'complete' : ''}`} />
             {error ? 'Error' : completed ? 'Complete' : 'Running'}
           </span>
+          <ApiKeySettings />
         </div>
       </nav>
 

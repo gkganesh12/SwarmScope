@@ -20,9 +20,21 @@ class LLMClient:
         base_url: Optional[str] = None,
         model: Optional[str] = None
     ):
-        self.api_key = api_key or Config.LLM_API_KEY
-        self.base_url = base_url or Config.LLM_BASE_URL
-        self.model = model or Config.LLM_MODEL_NAME
+        # Try Flask g context first (BYO API keys), then fall back to Config
+        g_api_key = None
+        g_base_url = None
+        g_model = None
+        try:
+            from flask import g as flask_g
+            g_api_key = getattr(flask_g, 'llm_api_key', None)
+            g_base_url = getattr(flask_g, 'llm_base_url', None)
+            g_model = getattr(flask_g, 'llm_model_name', None)
+        except RuntimeError:
+            pass  # Outside Flask request context
+
+        self.api_key = api_key or g_api_key or Config.LLM_API_KEY
+        self.base_url = base_url or g_base_url or Config.LLM_BASE_URL
+        self.model = model or g_model or Config.LLM_MODEL_NAME
 
         if not self.api_key:
             raise ValueError("LLM_API_KEY not configured")

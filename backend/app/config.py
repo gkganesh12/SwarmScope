@@ -65,11 +65,13 @@ class Config:
     
     @classmethod
     def validate(cls):
-        """Validate required configuration"""
+        """Validate required configuration (server-side keys).
+        Note: Users can provide keys via BYO API headers even if server keys are missing.
+        """
         errors = []
         if not cls.LLM_API_KEY:
-            errors.append("LLM_API_KEY not configured")
+            errors.append("LLM_API_KEY not configured (users can provide via BYO API headers)")
         if not cls.ZEP_API_KEY:
-            errors.append("ZEP_API_KEY not configured")
+            errors.append("ZEP_API_KEY not configured (users can provide via BYO API headers)")
         return errors
 

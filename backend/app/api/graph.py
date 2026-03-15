@@ -6,7 +6,7 @@ Uses project context mechanism with server-side persistent state
 import os
 import traceback
 import threading
-from flask import request, jsonify
+from flask import request, jsonify, g
 
 from . import graph_bp
 from ..config import Config
@@ -284,7 +284,7 @@ def build_graph():
         
         # Check config
         errors = []
-        if not Config.ZEP_API_KEY:
+        if not g.zep_api_key:
             errors.append("ZEP_API_KEY not configured")
         if errors:
             logger.error(f"Config error: {errors}")
@@ -382,7 +382,7 @@ def build_graph():
                 )
                 
                 # Create graph build service
-                builder = GraphBuilderService(api_key=Config.ZEP_API_KEY)
+                builder = GraphBuilderService(api_key=g.zep_api_key)
                 
                 # Chunking
                 task_manager.update_task(
@@ -567,13 +567,13 @@ def get_graph_data(graph_id: str):
     Get graph data (nodes and edges)
     """
     try:
-        if not Config.ZEP_API_KEY:
+        if not g.zep_api_key:
             return jsonify({
                 "success": False,
                 "error": "ZEP_API_KEY not configured"
             }), 500
         
-        builder = GraphBuilderService(api_key=Config.ZEP_API_KEY)
+        builder = GraphBuilderService(api_key=g.zep_api_key)
         graph_data = builder.get_graph_data(graph_id)
         
         return jsonify({
@@ -595,13 +595,13 @@ def delete_graph(graph_id: str):
     Delete Zep graph
     """
     try:
-        if not Config.ZEP_API_KEY:
+        if not g.zep_api_key:
             return jsonify({
                 "success": False,
                 "error": "ZEP_API_KEY not configured"
             }), 500
         
-        builder = GraphBuilderService(api_key=Config.ZEP_API_KEY)
+        builder = GraphBuilderService(api_key=g.zep_api_key)
         builder.delete_graph(graph_id)
         
         return jsonify({

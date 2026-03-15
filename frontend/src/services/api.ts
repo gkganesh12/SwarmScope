@@ -1,9 +1,12 @@
+import { getByoHeaders } from './apiKeys';
+
 const API_BASE = '/api';
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
+  const byoHeaders = getByoHeaders();
   const res = await fetch(`${API_BASE}${path}`, {
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
     ...options,
+    headers: { 'Content-Type': 'application/json', ...byoHeaders, ...options?.headers },
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: res.statusText }));
@@ -24,8 +27,10 @@ export async function generateOntology(
   formData.append('simulation_requirement', simulationRequirement);
   formData.append('project_name', projectName);
 
+  const byoHeaders = getByoHeaders();
   const res = await fetch(`${API_BASE}/graph/ontology/generate`, {
     method: 'POST',
+    headers: { ...byoHeaders },
     body: formData,
   });
   if (!res.ok) {
@@ -193,6 +198,27 @@ export async function interviewAgent(simulationId: string, agentId: string, ques
     method: 'POST',
     body: JSON.stringify({ simulation_id: simulationId, agent_id: agentId, question }),
   });
+}
+
+// ── Config / BYO API ──────────────────────────────────
+
+export async function validateApiKeys() {
+  return request<{
+    llm: { valid: boolean; source: string; model?: string; base_url?: string; error?: string };
+    zep: { valid: boolean; source: string; error?: string };
+    all_valid: boolean;
+  }>('/config/validate-keys', { method: 'POST' });
+}
+
+export async function getConfigStatus() {
+  return request<{
+    llm_configured: boolean;
+    llm_source: string;
+    llm_model: string;
+    llm_base_url: string;
+    zep_configured: boolean;
+    zep_source: string;
+  }>('/config/status');
 }
 
 // ── Health ─────────────────────────────────────────────

@@ -41,6 +41,10 @@ def create_app(config_class=Config):
     
     # Enable CORS
     CORS(app, resources={r"/api/*": {"origins": "*"}})
+
+    # Register BYO API key extraction middleware
+    from .middleware import extract_api_keys
+    app.before_request(extract_api_keys)
     
     # Register simulation process cleanup (ensure all sim processes terminate on server shutdown)
     from .services.simulation_runner import SimulationRunner
@@ -63,18 +67,38 @@ def create_app(config_class=Config):
         return response
     
     # Register blueprints
-    from .api import graph_bp, simulation_bp, report_bp
+    from .api import graph_bp, simulation_bp, report_bp, config_bp
     app.register_blueprint(graph_bp, url_prefix='/api/graph')
     app.register_blueprint(simulation_bp, url_prefix='/api/simulation')
     app.register_blueprint(report_bp, url_prefix='/api/report')
+    app.register_blueprint(config_bp, url_prefix='/api/config')
     
     # Health check
     @app.route('/health')
     def health():
         return {'status': 'ok', 'service': 'SwarmScope Backend'}
-    
+
+    # Serve frontend static files in production (when frontend/dist exists)
+    frontend_dist = os.path.join(os.path.dirname(__file__), '../../frontend/dist')
+    if os.path.isdir(frontend_dist):
+        from flask import send_from_directory
+
+        @app.route('/', defaults={'path': ''})
+        @app.route('/<path:path>')
+        def serve_frontend(path):
+            # Don't intercept API/health routes
+            if path.startswith('api/') or path == 'health':
+                return app.send_static_file('404.html'), 404
+            file_path = os.path.join(frontend_dist, path)
+            if path and os.path.isfile(file_path):
+                return send_from_directory(frontend_dist, path)
+            return send_from_directory(frontend_dist, 'index.html')
+
+        if should_log_startup:
+            logger.info(f"Serving frontend from {frontend_dist}")
+
     if should_log_startup:
         logger.info("SwarmScope Backend startup complete")
-    
+
     return app
 

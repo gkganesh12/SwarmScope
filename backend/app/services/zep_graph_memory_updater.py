@@ -237,8 +237,9 @@ class ZepGraphMemoryUpdater:
             graph_id: Zep graph ID
             api_key: Zep API Key (optional, defaults to config value)
         """
+        from ..utils.byo_keys import get_zep_api_key
         self.graph_id = graph_id
-        self.api_key = api_key or Config.ZEP_API_KEY
+        self.api_key = get_zep_api_key(api_key)
 
         if not self.api_key:
             raise ValueError("ZEP_API_KEY not configured")

@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SwarmCanvas from '../components/SwarmCanvas';
+import ApiKeySettings from '../components/ApiKeySettings';
 import { UploadCloud, Terminal, Play, ArrowDown, Zap, Shield, BarChart3, Users, Cpu, Globe } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -77,9 +78,9 @@ export default function Home() {
           <span className="nav-badge">PREVIEW</span>
         </div>
         <div className="nav-links">
-          <a href="#">Docs</a>
-          <a href="#">API</a>
-          <a href="#">GitHub&nbsp;<span className="arrow">↗</span></a>
+          <a href="https://github.com/gkganesh12/SwarmScope#readme" target="_blank" rel="noopener noreferrer">Docs</a>
+          <a href="https://github.com/gkganesh12/SwarmScope" target="_blank" rel="noopener noreferrer">GitHub&nbsp;<span className="arrow">↗</span></a>
+          <ApiKeySettings />
         </div>
       </motion.nav>
 
@@ -121,9 +122,9 @@ export default function Home() {
               Get Started
               <ArrowDown size={14} />
             </button>
-            <button className="hero-btn-secondary">
+            <a href="https://github.com/gkganesh12/SwarmScope#readme" target="_blank" rel="noopener noreferrer" className="hero-btn-secondary">
               View Docs
-            </button>
+            </a>
           </motion.div>
         </div>
 
@@ -327,10 +328,8 @@ export default function Home() {
             <span className="footer-copy">Multi-Agent Simulation Engine</span>
           </div>
           <div className="footer-right">
-            <a href="#">Docs</a>
-            <a href="#">API</a>
-            <a href="#">GitHub</a>
-            <a href="#">Contact</a>
+            <a href="https://github.com/gkganesh12/SwarmScope#readme" target="_blank" rel="noopener noreferrer">Docs</a>
+            <a href="https://github.com/gkganesh12/SwarmScope" target="_blank" rel="noopener noreferrer">GitHub</a>
           </div>
         </div>
         <div className="footer-bottom">

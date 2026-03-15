@@ -5,7 +5,7 @@ Step2: Zep entity reading and filtering, OASIS simulation preparation and execut
 
 import os
 import traceback
-from flask import request, jsonify, send_file
+from flask import request, jsonify, send_file, g
 
 from . import simulation_bp
 from ..config import Config
@@ -56,7 +56,7 @@ def get_graph_entities(graph_id: str):
         enrich: Whether to get related edge info (default true)
     """
     try:
-        if not Config.ZEP_API_KEY:
+        if not g.zep_api_key:
             return jsonify({
                 "success": False,
                 "error": "ZEP_API_KEY not configured"
@@ -93,7 +93,7 @@ def get_graph_entities(graph_id: str):
 def get_entity_detail(graph_id: str, entity_uuid: str):
     """Get detailed info for a single entity"""
     try:
-        if not Config.ZEP_API_KEY:
+        if not g.zep_api_key:
             return jsonify({
                 "success": False,
                 "error": "ZEP_API_KEY not configured"
@@ -126,7 +126,7 @@ def get_entity_detail(graph_id: str, entity_uuid: str):
 def get_entities_by_type(graph_id: str, entity_type: str):
     """Get all entities of specified type"""
     try:
-        if not Config.ZEP_API_KEY:
+        if not g.zep_api_key:
             return jsonify({
                 "success": False,
                 "error": "ZEP_API_KEY not configured"

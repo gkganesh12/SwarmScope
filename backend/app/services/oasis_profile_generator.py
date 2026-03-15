@@ -185,20 +185,21 @@ class OasisProfileGenerator:
         zep_api_key: Optional[str] = None,
         graph_id: Optional[str] = None
     ):
-        self.api_key = api_key or Config.LLM_API_KEY
-        self.base_url = base_url or Config.LLM_BASE_URL
-        self.model_name = model_name or Config.LLM_MODEL_NAME
-        
+        from ..utils.byo_keys import get_llm_api_key, get_llm_base_url, get_llm_model_name, get_zep_api_key
+        self.api_key = get_llm_api_key(api_key)
+        self.base_url = get_llm_base_url(base_url)
+        self.model_name = get_llm_model_name(model_name)
+
         if not self.api_key:
             raise ValueError("LLM_API_KEY not configured")
-        
+
         self.client = OpenAI(
             api_key=self.api_key,
             base_url=self.base_url
         )
-        
+
         # Zep client for rich context retrieval
-        self.zep_api_key = zep_api_key or Config.ZEP_API_KEY
+        self.zep_api_key = get_zep_api_key(zep_api_key)
         self.zep_client = None
         self.graph_id = graph_id
         
