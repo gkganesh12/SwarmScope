@@ -107,7 +107,8 @@ export default function Simulation() {
       addLog('Uploading seed materials...');
 
       const projectName = `sim_${Date.now()}`;
-      const ontologyResult = await api.generateOntology(files, prompt, projectName);
+      const ontologyRaw = await api.generateOntology(files, prompt, projectName);
+      const ontologyResult = ontologyRaw.data || ontologyRaw;
       const pId = ontologyResult.project_id;
       setProjectId(pId);
 
@@ -119,7 +120,8 @@ export default function Simulation() {
       updateStep('graph', { status: 'running', message: 'Building knowledge graph...' });
       addLog('Starting graph construction...');
 
-      const graphResult = await api.buildGraph(pId);
+      const graphRaw = await api.buildGraph(pId);
+      const graphResult = (graphRaw as any).data || graphRaw;
       const graphTaskId = graphResult.task_id;
       addLog(`Graph build task: ${graphTaskId}`);
 
@@ -127,7 +129,8 @@ export default function Simulation() {
       let graphDone = false;
       while (!graphDone) {
         await delay(POLL_INTERVAL);
-        const taskStatus = await api.getTaskStatus(graphTaskId);
+        const taskRaw = await api.getTaskStatus(graphTaskId);
+        const taskStatus = (taskRaw as any).data || taskRaw;
         updateStep('graph', {
           progress: taskStatus.progress || 0,
           message: taskStatus.message || 'Building...',
@@ -142,7 +145,8 @@ export default function Simulation() {
       }
 
       // Get the graph_id from project
-      const project = await api.getProject(pId);
+      const projectRaw = await api.getProject(pId);
+      const project = (projectRaw as any).data || projectRaw;
       const graphId = project.graph_id as string;
       addLog(`Knowledge graph ready: ${graphId}`);
       updateStep('graph', { status: 'done', progress: 100, message: 'Graph complete' });
@@ -151,13 +155,15 @@ export default function Simulation() {
       updateStep('prepare', { status: 'running', message: 'Creating simulation & generating agents...' });
       addLog('Creating simulation...');
 
-      const simResult = await api.createSimulation(pId, graphId);
+      const simRaw = await api.createSimulation(pId, graphId);
+      const simResult = (simRaw as any).data || simRaw;
       const sId = simResult.simulation_id;
       setSimulationId(sId);
       addLog(`Simulation created: ${sId}`);
 
       addLog('Preparing simulation — generating agent profiles...');
-      const prepResult = await api.prepareSimulation(sId);
+      const prepRaw = await api.prepareSimulation(sId);
+      const prepResult = (prepRaw as any).data || prepRaw;
       const prepTaskId = prepResult.task_id;
       addLog(`Expected entities: ${prepResult.expected_entities_count || 'calculating...'}`);
 
@@ -165,7 +171,8 @@ export default function Simulation() {
       let prepDone = false;
       while (!prepDone) {
         await delay(POLL_INTERVAL);
-        const prepStatus = await api.getPrepareStatus(prepTaskId);
+        const prepStatusRaw = await api.getPrepareStatus(prepTaskId);
+        const prepStatus = (prepStatusRaw as any).data || prepStatusRaw;
         updateStep('prepare', {
           progress: prepStatus.progress || 0,
           message: prepStatus.message || 'Preparing...',
@@ -194,7 +201,8 @@ export default function Simulation() {
       while (!simDone) {
         await delay(POLL_INTERVAL);
         try {
-          const runStatus = await api.getRunStatus(sId);
+          const runStatusRaw = await api.getRunStatus(sId);
+          const runStatus = (runStatusRaw as any).data || runStatusRaw;
           const round = runStatus.current_round || 0;
           const maxRounds = runStatus.max_rounds || 5;
           const pct = Math.round((round / maxRounds) * 100);
@@ -211,7 +219,8 @@ export default function Simulation() {
           }
         } catch (e) {
           // If run-status endpoint fails, check simulation state directly
-          const sim = await api.getSimulation(sId);
+          const simStateRaw = await api.getSimulation(sId);
+          const sim = (simStateRaw as any).data || simStateRaw;
           if (sim.status === 'COMPLETED') {
             simDone = true;
           } else if (sim.status === 'FAILED') {
@@ -227,7 +236,8 @@ export default function Simulation() {
       updateStep('report', { status: 'running', message: 'Generating analysis report...' });
       addLog('Starting report generation...');
 
-      const reportResult = await api.generateReport(sId);
+      const reportRaw = await api.generateReport(sId);
+      const reportResult = (reportRaw as any).data || reportRaw;
       const rId = reportResult.report_id;
       setReportId(rId);
       const reportTaskId = reportResult.task_id;
@@ -236,7 +246,8 @@ export default function Simulation() {
       let reportDone = false;
       while (!reportDone) {
         await delay(POLL_INTERVAL);
-        const reportStatus = await api.getReportStatus(reportTaskId);
+        const reportStatusRaw = await api.getReportStatus(reportTaskId);
+        const reportStatus = (reportStatusRaw as any).data || reportStatusRaw;
         updateStep('report', {
           progress: reportStatus.progress || 0,
           message: reportStatus.message || 'Analyzing...',
@@ -254,12 +265,12 @@ export default function Simulation() {
       updateStep('report', { status: 'done', progress: 100, message: 'Report ready' });
 
       // Load final data
-      const [report, stats] = await Promise.all([
+      const [reportDataRaw, statsRaw] = await Promise.all([
         api.getReport(rId),
         api.getAgentStats(sId).catch(() => null),
       ]);
-      setReportData(report);
-      setAgentStats(stats);
+      setReportData((reportDataRaw as any)?.data || reportDataRaw);
+      setAgentStats(statsRaw ? ((statsRaw as any)?.data || statsRaw) : null);
       setCompleted(true);
       addLog('Pipeline complete. All systems nominal.');
 
